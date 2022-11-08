@@ -17,11 +17,10 @@ import (
 )
 
 type RequestInfo struct {
-	File_prefix  string
-	Request_ID   string
-	Student_ID   string
-	Program_code string
-	AccessToken  string
+	File_prefix string
+	Request_ID  string
+	Student_ID  string
+	AccessToken string
 }
 
 type AccessToken struct {
@@ -150,7 +149,7 @@ func main() {
 	// for _, s := range result.Array() {
 	// 	fmt.Println(s)
 	// }
-	noOfWorker := 10
+	noOfWorker := 100
 	accessToken := RetriveToken()
 	// done := make(chan bool)
 	go AddQueue(accessToken)
