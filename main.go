@@ -14,6 +14,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 type RequestInfo struct {
@@ -82,15 +83,8 @@ func AddQueue(accessToken string) {
 
 	readFile.Close()
 	close(jobs)
-	// return &fileLines
 }
 
-// func (R RequestInfo) AddQueue(AccessToken string, c chan [5]string) {
-// 	requeslist := [5]string{R.File_prefix, R.Program_code, R.Request_ID, R.Student_ID, AccessToken}
-
-// 	c <- requeslist
-
-// }
 func CreateWokerPool(noOfWorkers int) {
 	var wg sync.WaitGroup
 	for i := 0; i < noOfWorkers; i++ {
@@ -98,7 +92,6 @@ func CreateWokerPool(noOfWorkers int) {
 		go Processor(&wg)
 	}
 	wg.Wait()
-	// close(results)
 
 }
 
@@ -149,12 +142,15 @@ func main() {
 	// for _, s := range result.Array() {
 	// 	fmt.Println(s)
 	// }
+	startTime := time.Now()
 	noOfWorker := 100
 	accessToken := RetriveToken()
-	// done := make(chan bool)
+
 	go AddQueue(accessToken)
 
 	CreateWokerPool(noOfWorker)
-	fmt.Println("main function")
-	// <-done
+	endTime := time.Now()
+	diff := endTime.Sub(startTime)
+	fmt.Println("total time taken ", diff.Seconds(), "seconds")
+
 }
