@@ -96,20 +96,20 @@ func CreateWokerPool(noOfWorkers int) {
 	var wg sync.WaitGroup
 	for i := 0; i < noOfWorkers; i++ {
 		wg.Add(1)
-		go Downloader(&wg)
+		go Processor(&wg)
 	}
 	wg.Wait()
 	// close(results)
 
 }
 
-func Downloader(wg *sync.WaitGroup) {
+func Processor(wg *sync.WaitGroup) {
 	for job := range jobs {
 		out, err := os.Create(job.File_prefix + job.Student_ID + ".zip")
 		if err != nil {
 			fmt.Println(err)
 		}
-		defer out.Close()
+
 		fmt.Println(job.Student_ID)
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", "https://sign.zoho.com/api/v1/requests/"+job.Request_ID+"/pdf", nil)
@@ -121,7 +121,7 @@ func Downloader(wg *sync.WaitGroup) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		defer resp.Body.Close()
+
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
 			fmt.Println(err)
