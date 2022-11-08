@@ -144,10 +144,13 @@ func main() {
 	// }
 	startTime := time.Now()
 	noOfWorker := 100
+	// get Access Token
 	accessToken := RetriveToken()
 
+	// read download list into channel
 	go AddQueue(accessToken)
 
+	// multithread worker pool and assign job from channel
 	CreateWokerPool(noOfWorker)
 	endTime := time.Now()
 	diff := endTime.Sub(startTime)
