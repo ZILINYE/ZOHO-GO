@@ -64,7 +64,7 @@ func RetriveToken() string {
 	return post.Access_token
 }
 func AddQueue(accessToken string) {
-	readFile, err := os.Open("test.txt")
+	readFile, err := os.Open("DownloadList.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -102,7 +102,6 @@ func Processor(wg *sync.WaitGroup) {
 			fmt.Println(err)
 		}
 
-		fmt.Println(job.Student_ID)
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", "https://sign.zoho.com/api/v1/requests/"+job.Request_ID+"/pdf", nil)
 		if err != nil {
@@ -143,7 +142,7 @@ func main() {
 	// 	fmt.Println(s)
 	// }
 	startTime := time.Now()
-	noOfWorker := 100
+	noOfWorker := 5
 	// get Access Token
 	accessToken := RetriveToken()
 
