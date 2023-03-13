@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 )
-
+# Define each request information
 type RequestInfo struct {
 	File_prefix string
 	Request_ID  string
@@ -61,6 +61,7 @@ func RetriveToken() string {
 	}
 	return post.Access_token
 }
+# Add every request into the queue and waiting for worker to process
 func AddQueue(accessToken string) {
 	readFile, err := os.Open("DownloadList.txt")
 	if err != nil {
@@ -82,8 +83,8 @@ func AddQueue(accessToken string) {
 	readFile.Close()
 	close(jobs)
 }
-
-func CreateWokerPool(noOfWorkers int) {
+# Define worker pool
+func CreateWorkerPool(noOfWorkers int) {
 	var wg sync.WaitGroup
 	for i := 0; i < noOfWorkers; i++ {
 		wg.Add(1)
@@ -132,7 +133,7 @@ func main() {
 	go AddQueue(accessToken)
 
 	// multithread worker pool and assign job from channel
-	CreateWokerPool(noOfWorker)
+	CreateWorkerPool(noOfWorker)
 	endTime := time.Now()
 	diff := endTime.Sub(startTime)
 	fmt.Println("total time taken ", diff.Seconds(), "seconds")
