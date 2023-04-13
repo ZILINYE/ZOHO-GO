@@ -2,6 +2,7 @@ package GetList
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -46,6 +47,39 @@ func RetriveToken() string {
 	return post.Access_token
 }
 
-func HttpRequest(start_index int) {
+func HttpRequest(accesstoken string) {
+	// Set the URL endpoint
+	apiurl := "https://sign.zoho.com/api/v1/requests"
 
+	// Set the request parameters
+	params := url.Values{}
+	params.Set("data", `{"page_context":{"row_count":10,"start_index":1,"search_columns":{},"sort_column":"created_time","sort_order":"DESC"}}`)
+
+	// Create a new GET request with the authorization header
+	req, err := http.NewRequest("GET", apiurl, nil)
+	if err != nil {
+		panic(err)
+	}
+	zohotoken := "Zoho-oauthtoken " + accesstoken
+	req.Header.Set("Authorization", zohotoken)
+
+	// Add the request parameters to the URL query string
+	req.URL.RawQuery = params.Encode()
+
+	// Send the request and check for errors
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	// Print the response body
+	fmt.Println(string(body))
 }

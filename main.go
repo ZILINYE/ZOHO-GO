@@ -8,12 +8,10 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	// "time"
 
 	"ZOHO-GO/GetList"
-	"ZOHO-GO/Maria"
 )
 
 // Define each request information
@@ -88,23 +86,24 @@ func Processor(wg *sync.WaitGroup) {
 }
 
 func main() {
-	// Init the database connection
-	db := Maria.InitMaria()
-	// Getting the student information by passing the student campus email address
-	// ? param campus email address
-	Maria.GetStudentInfo("zhonghao.gu01@stclairconnect.ca", db)
-	startTime := time.Now()
-	noOfWorker := 100
+	// // Init the database connection
+	// // db := Maria.InitMaria()
+	// // Getting the student information by passing the student campus email address
+	// // ? param campus email address
+	// Maria.GetStudentInfo("zhonghao.gu01@stclairconnect.ca", db)
+	// startTime := time.Now()
+	// noOfWorker := 100
 	// get Access Token
 	accessToken := GetList.RetriveToken()
+	GetList.HttpRequest(accessToken)
 
 	// read download list into channel
-	go AddQueue(accessToken)
+	// go AddQueue(accessToken)
 
-	// multithread worker pool and assign job from channel
-	CreateWorkerPool(noOfWorker)
-	endTime := time.Now()
-	diff := endTime.Sub(startTime)
-	fmt.Println("total time taken ", diff.Seconds(), "seconds")
+	// // multithread worker pool and assign job from channel
+	// CreateWorkerPool(noOfWorker)
+	// endTime := time.Now()
+	// diff := endTime.Sub(startTime)
+	// fmt.Println("total time taken ", diff.Seconds(), "seconds")
 
 }
