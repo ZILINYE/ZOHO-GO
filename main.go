@@ -15,7 +15,8 @@ import (
 	"ZOHO-GO/GetList"
 	"ZOHO-GO/Maria"
 )
-# Define each request information
+
+// Define each request information
 type RequestInfo struct {
 	File_prefix string
 	Request_ID  string
@@ -46,7 +47,8 @@ func AddQueue(accessToken string) {
 	readFile.Close()
 	close(jobs)
 }
-# Define worker pool
+
+// Define worker pool
 func CreateWorkerPool(noOfWorkers int) {
 	var wg sync.WaitGroup
 	for i := 0; i < noOfWorkers; i++ {
