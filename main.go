@@ -9,8 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	// "time"
-
 	"ZOHO-GO/GetList"
 )
 
@@ -95,7 +93,7 @@ func main() {
 	// noOfWorker := 100
 	// get Access Token
 	accessToken := GetList.RetriveToken()
-	GetList.HttpRequest(accessToken)
+	fmt.Println(GetList.HttpRequest(accessToken, "{}", 10))
 
 	// read download list into channel
 	// go AddQueue(accessToken)

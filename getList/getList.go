@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"reflect"
+	"strconv"
 )
 
 type AccessToken struct {
@@ -47,13 +49,14 @@ func RetriveToken() string {
 	return post.Access_token
 }
 
-func HttpRequest(accesstoken string) {
+func HttpRequest(accesstoken, search_key string, start_index int) map[string]any {
 	// Set the URL endpoint
 	apiurl := "https://sign.zoho.com/api/v1/requests"
 
 	// Set the request parameters
 	params := url.Values{}
-	params.Set("data", `{"page_context":{"row_count":10,"start_index":1,"search_columns":{},"sort_column":"created_time","sort_order":"DESC"}}`)
+	content := `{"page_context":{"row_count":` + strconv.Itoa(start_index) + `,"start_index":1,"search_columns":{"request_name": ` + search_key + `},"sort_column":"created_time","sort_order":"DESC"}}`
+	params.Set("data", content)
 
 	// Create a new GET request with the authorization header
 	req, err := http.NewRequest("GET", apiurl, nil)
@@ -81,5 +84,16 @@ func HttpRequest(accesstoken string) {
 	}
 
 	// Print the response body
-	fmt.Println(string(body))
+	fmt.Println(reflect.TypeOf(body))
+
+	// Convert the resbonse into json
+	m := map[string]any{}
+	if err := json.Unmarshal(body, &m); err != nil {
+		panic(err)
+	}
+	return m
+	// page_context := m["page_context"]
+	// fmt.Println(reflect.TypeOf(page_context))
+	// total_count := page_context.(map[string]interface{})["total_count"]
+	// fmt.Println(total_count)
 }
