@@ -92,8 +92,8 @@ func main() {
 	// startTime := time.Now()
 	// noOfWorker := 100
 	// get Access Token
-	accessToken := GetList.RetriveToken()
-	fmt.Println(GetList.HttpRequest(accessToken, "{}", 10))
+	// accessToken := GetList.RetriveToken()
+	GetList.GetDownloadList(1)
 
 	// read download list into channel
 	// go AddQueue(accessToken)

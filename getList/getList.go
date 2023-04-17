@@ -3,11 +3,11 @@ package GetList
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strconv"
 )
 
@@ -17,7 +17,7 @@ type AccessToken struct {
 	Token_type   string `json:"token_type"`
 	Expires_in   int    `json:"expires_in"`
 }
-
+var DownloadList [][]string
 func RetriveToken() string {
 
 	params := url.Values{}
@@ -33,7 +33,7 @@ func RetriveToken() string {
 
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("Reading body failed: %s", err)
 
@@ -49,13 +49,14 @@ func RetriveToken() string {
 	return post.Access_token
 }
 
-func HttpRequest(accesstoken, search_key string, start_index int) map[string]any {
+func HttpRequest(search_key string, row_count,start_index int) map[string]any {
+	accesstoken := RetriveToken()
 	// Set the URL endpoint
 	apiurl := "https://sign.zoho.com/api/v1/requests"
 
 	// Set the request parameters
 	params := url.Values{}
-	content := `{"page_context":{"row_count":` + strconv.Itoa(start_index) + `,"start_index":1,"search_columns":{"request_name": ` + search_key + `},"sort_column":"created_time","sort_order":"DESC"}}`
+	content := `{"page_context":{"row_count":` + strconv.Itoa(row_count) + `,"start_index":` + strconv.Itoa(start_index) + `,"search_columns":{"request_name": ` + search_key + `},"sort_column":"created_time","sort_order":"DESC"}}`
 	params.Set("data", content)
 
 	// Create a new GET request with the authorization header
@@ -78,13 +79,10 @@ func HttpRequest(accesstoken, search_key string, start_index int) map[string]any
 	defer resp.Body.Close()
 
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
-
-	// Print the response body
-	fmt.Println(reflect.TypeOf(body))
 
 	// Convert the resbonse into json
 	m := map[string]any{}
@@ -92,8 +90,24 @@ func HttpRequest(accesstoken, search_key string, start_index int) map[string]any
 		panic(err)
 	}
 	return m
-	// page_context := m["page_context"]
-	// fmt.Println(reflect.TypeOf(page_context))
-	// total_count := page_context.(map[string]interface{})["total_count"]
-	// fmt.Println(total_count)
+
+}
+
+func GetThreadnumber() float64{
+	page_context := HttpRequest("23W", 10,1)["page_context"]
+
+	var total_count float64 = page_context.(map[string]interface{})["total_count"].(float64)
+	pages:= total_count/10
+
+	thread_number := math.Ceil(pages)
+	// fmt.Println(thread_number)
+	return thread_number
+}
+
+func GetDownloadList(start_index int){
+
+	requests := HttpRequest( "23W", 10,start_index)["requests"]
+	fmt.Println(requests)
+
+
 }
