@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strconv"
 )
 
@@ -106,8 +107,11 @@ func GetThreadnumber() float64{
 
 func GetDownloadList(start_index int){
 
-	requests := HttpRequest( "23W", 10,start_index)["requests"]
-	fmt.Println(requests)
+	 requests := HttpRequest( "23W", 10,start_index)["requests"].(map[string]interface{})
+	fmt.Println(reflect.TypeOf(requests))
+	for _,element :=range requests{
+		fmt.Print(element)
+	}
 
 
 }
