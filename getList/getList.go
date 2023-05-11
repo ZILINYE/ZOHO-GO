@@ -1,6 +1,7 @@
 package GetList
 
 import (
+	"ZOHO-GO/Maria"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -104,12 +105,14 @@ func GetThreadnumber() float64{
 	return thread_number
 }
 
-func GetDownloadList(start_index int){
-
-	requests := HttpRequest( "23W", 10,start_index)["requests"]
+func GetDownloadList(start_index,row_count int, keyword string){
+	db := Maria.InitMaria()
+	requests := HttpRequest( keyword,row_count,start_index)["requests"]
 	for _,element :=range requests.([]interface {}){
-		fmt.Print(element.(map[string]interface{})["request_id"])
-		fmt.Print(element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"])
+		request_id :=element.(map[string]interface{})["request_id"]
+		camp_email,_:=element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"].(string)
+		studentID,Proname:=Maria.GetStudentInfo(camp_email,"Spring",2023,db)
+		fmt.Print(request_id," ",Proname," ",studentID)
 		fmt.Print("\n")
 	}
 

@@ -83,16 +83,12 @@ func Processor(wg *sync.WaitGroup) {
 }
 
 func main() {
-	// Init the database connection
-	// db := Maria.InitMaria()
-	// // Getting the student information by passing the student campus email address
-	// // ? param campus email address
-	// Maria.GetStudentInfo("zhonghao.gu01@stclairconnect.ca","Winter",2020,db)
+
 	// startTime := time.Now()
 	// noOfWorker := 100
 	// get Access Token
 	// accessToken := GetList.RetriveToken()
-	GetList.GetDownloadList(1)
+	GetList.GetDownloadList(1,10,"23S")
 
 	// read download list into channel
 	// go AddQueue(accessToken)

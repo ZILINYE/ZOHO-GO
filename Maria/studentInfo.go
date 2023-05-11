@@ -21,7 +21,6 @@ func GetStudentInfo(campemail,term string,year int,db *sql.DB) (string,string) {
 		statementPro:=`SELECT Program_code FROM Enrollment WHERE StudentID=? AND Term=? AND TermYear=? LIMIT 1;`
 		row2 := db.QueryRow(statementPro, ID,term,year)
 		row2.Scan(&Program_code);
-		fmt.Println(ID,Program_code)
 	default:
 		panic(err)
 
