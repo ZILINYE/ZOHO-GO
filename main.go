@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ZOHO-GO/GetList"
 	"bufio"
 	"fmt"
 	"io"
@@ -8,8 +9,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-
-	"ZOHO-GO/GetList"
 )
 
 // Define each request information
@@ -84,11 +83,11 @@ func Processor(wg *sync.WaitGroup) {
 }
 
 func main() {
-	// // Init the database connection
-	// // db := Maria.InitMaria()
+	// Init the database connection
+	// db := Maria.InitMaria()
 	// // Getting the student information by passing the student campus email address
 	// // ? param campus email address
-	// Maria.GetStudentInfo("zhonghao.gu01@stclairconnect.ca", db)
+	// Maria.GetStudentInfo("zhonghao.gu01@stclairconnect.ca","Winter",2020,db)
 	// startTime := time.Now()
 	// noOfWorker := 100
 	// get Access Token

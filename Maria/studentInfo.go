@@ -7,22 +7,26 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetStudentInfo(campemail string, db *sql.DB) (string, string) {
+func GetStudentInfo(campemail,term string,year int,db *sql.DB) (string,string) {
 	var ID string
-	var Birthday string
+	var Program_code string
 	// Query the database
-	statement := `SELECT ID,Birthday FROM Student WHERE CampEmail=?;`
-	row := db.QueryRow(statement, campemail)
-	switch err := row.Scan(&ID, &Birthday); err {
+	statementinfo := `SELECT ID FROM Student WHERE CampEmail=?;`
+	row := db.QueryRow(statementinfo, campemail)
+	switch err := row.Scan(&ID); err {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
 	case nil:
-		fmt.Println(ID, Birthday)
+		
+		statementPro:=`SELECT Program_code FROM Enrollment WHERE StudentID=? AND Term=? AND TermYear=? LIMIT 1;`
+		row2 := db.QueryRow(statementPro, ID,term,year)
+		row2.Scan(&Program_code);
+		fmt.Println(ID,Program_code)
 	default:
 		panic(err)
 
 	}
-	return ID, Birthday
+	return ID,Program_code
 }
 
 func InitMaria() *sql.DB {
