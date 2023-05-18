@@ -18,7 +18,14 @@ type AccessToken struct {
 	Token_type   string `json:"token_type"`
 	Expires_in   int    `json:"expires_in"`
 }
-var DownloadList [][]string
+
+type DownloadList struct {
+	request_id   string
+	program_code string
+	student_id   string
+}
+
+// var DownloadList [][]string
 func RetriveToken() string {
 
 	params := url.Values{}
@@ -50,7 +57,7 @@ func RetriveToken() string {
 	return post.Access_token
 }
 
-func HttpRequest(search_key string, row_count,start_index int) map[string]any {
+func HttpRequest(search_key string, row_count, start_index int) map[string]any {
 	accesstoken := RetriveToken()
 	// Set the URL endpoint
 	apiurl := "https://sign.zoho.com/api/v1/requests"
@@ -94,27 +101,34 @@ func HttpRequest(search_key string, row_count,start_index int) map[string]any {
 
 }
 
-func GetThreadnumber() float64{
-	page_context := HttpRequest("23W", 10,1)["page_context"]
+func GetThreadnumber() float64 {
+	page_context := HttpRequest("23W", 10, 1)["page_context"]
 
 	var total_count float64 = page_context.(map[string]interface{})["total_count"].(float64)
-	pages:= total_count/10
+	pages := total_count / 10
 
 	thread_number := math.Ceil(pages)
 	// fmt.Println(thread_number)
 	return thread_number
 }
 
-func GetDownloadList(start_index,row_count int, keyword string){
+func GetDownloadList(start_index, row_count int, keyword string) []DownloadList {
+	var Download_list []DownloadList
 	db := Maria.InitMaria()
-	requests := HttpRequest( keyword,row_count,start_index)["requests"]
-	for _,element :=range requests.([]interface {}){
-		request_id :=element.(map[string]interface{})["request_id"]
-		camp_email,_:=element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"].(string)
-		studentID,Proname:=Maria.GetStudentInfo(camp_email,"Spring",2023,db)
-		fmt.Print(request_id," ",Proname," ",studentID)
-		fmt.Print("\n")
-	}
+	requests := HttpRequest(keyword, row_count, start_index)["requests"]
+	for _, element := range requests.([]interface{}) {
+		if element.(map[string]interface{})["request_status"].(string) == "completed" {
+			request_id := element.(map[string]interface{})["request_id"].(string)
+			camp_email, _ := element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"].(string)
 
+			studentID, Proname := Maria.GetStudentInfo(camp_email, "Spring", 2023, db)
+			fmt.Print(request_id, " ", Proname, " ", studentID)
+			fmt.Print("\n")
+			Download_list = append(Download_list, DownloadList{request_id: request_id, program_code: Proname, student_id: studentID})
+
+		}
+
+	}
+	return Download_list
 
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ZOHO-GO/GetList"
+	"ZOHO-GO/FileProcess"
 	"bufio"
 	"fmt"
 	"io"
@@ -88,11 +88,12 @@ func main() {
 	// noOfWorker := 100
 	// get Access Token
 	// accessToken := GetList.RetriveToken()
-	GetList.GetDownloadList(1,10,"23S")
+	// DownloadList:=GetList.GetDownloadList(1,10,"23S")
+	// fmt.Print(DownloadList)
 
 	// read download list into channel
 	// go AddQueue(accessToken)
-
+	FileProcess.MergePDFs()
 	// // multithread worker pool and assign job from channel
 	// CreateWorkerPool(noOfWorker)
 	// endTime := time.Now()
