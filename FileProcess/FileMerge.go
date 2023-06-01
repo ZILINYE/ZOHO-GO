@@ -16,9 +16,9 @@ func MergePDFs() {
 
 }
 
-func Extractor() {
+func Extractor(zipFile, extractDir string) {
 	// Specify the path to the ZIP file you want to extract
-	zipFile := "C:/Users/admin/Desktop/test1.zip"
+	// zipFile := "C:/Users/admin/Desktop/test1.zip"
 
 	// Open the ZIP file for reading
 	r, err := zip.OpenReader(zipFile)
@@ -29,7 +29,7 @@ func Extractor() {
 	defer r.Close()
 
 	// Create a directory to extract the files
-	extractDir := "C:/Users/admin/Desktop/test"
+	// extractDir := "C:/Users/admin/Desktop/test"
 	if err := os.MkdirAll(extractDir, 0755); err != nil {
 		fmt.Println("Error creating extract directory:", err)
 		return

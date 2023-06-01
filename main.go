@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ZOHO-GO/FileProcess"
+	"ZOHO-GO/GetList"
 	"bufio"
 	"fmt"
 	"io"
@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Define each request information
@@ -20,6 +21,7 @@ type RequestInfo struct {
 }
 
 var jobs = make(chan RequestInfo)
+var extactlist = make(chan string)
 
 func AddQueue(accessToken string) {
 	readFile, err := os.Open("DownloadList.txt")
@@ -56,7 +58,8 @@ func CreateWorkerPool(noOfWorkers int) {
 
 func Processor(wg *sync.WaitGroup) {
 	for job := range jobs {
-		out, err := os.Create(job.File_prefix + job.Student_ID + ".zip")
+		filename := job.File_prefix + job.Student_ID + ".zip"
+		out, err := os.Create(filename)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -75,6 +78,8 @@ func Processor(wg *sync.WaitGroup) {
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
 			fmt.Println(err)
+		} else {
+			extactlist <- filename
 		}
 
 	}
@@ -84,20 +89,20 @@ func Processor(wg *sync.WaitGroup) {
 
 func main() {
 
-	// startTime := time.Now()
-	// noOfWorker := 100
+	startTime := time.Now()
+	noOfWorker := 100
 	// get Access Token
-	// accessToken := GetList.RetriveToken()
-	// DownloadList:=GetList.GetDownloadList(1,10,"23S")
-	// fmt.Print(DownloadList)
+	accessToken := GetList.RetriveToken()
+	DownloadList := GetList.GetDownloadList(1, 10, "23S")
+	fmt.Print(DownloadList)
 
 	// read download list into channel
-	// go AddQueue(accessToken)
-	FileProcess.MergePDFs()
+	go AddQueue(accessToken)
+	// FileProcess.MergePDFs()
 	// // multithread worker pool and assign job from channel
-	// CreateWorkerPool(noOfWorker)
-	// endTime := time.Now()
-	// diff := endTime.Sub(startTime)
-	// fmt.Println("total time taken ", diff.Seconds(), "seconds")
+	CreateWorkerPool(noOfWorker)
+	endTime := time.Now()
+	diff := endTime.Sub(startTime)
+	fmt.Println("total time taken ", diff.Seconds(), "seconds")
 
 }
