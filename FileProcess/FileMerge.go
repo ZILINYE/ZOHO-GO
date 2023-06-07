@@ -25,7 +25,6 @@ func LoopFile() {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-
 		extactlist <- info.Name()
 
 		return nil
@@ -64,8 +63,8 @@ func Extractor(wg *sync.WaitGroup) {
 		}
 
 		// Create a directory to extract the files
-		// extractDir := "C:/Users/admin/Desktop/test"
-		if err := os.MkdirAll("C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test", 0755); err != nil {
+		extractDir := strings.Split(zipFile, ".")[0]
+		if err := os.MkdirAll("C:/Users/admin/Desktop/ZOHO-GO/StudentContract/"+extractDir, 0755); err != nil {
 			fmt.Println("Error creating extract directory:", err)
 			currentDirectory, _ := os.Getwd()
 			fmt.Println("The current directory is ", currentDirectory)
