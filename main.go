@@ -1,13 +1,11 @@
 package main
 
 import (
-	"ZOHO-GO/GetList"
-	"bufio"
+	"ZOHO-GO/FileProcess"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 	"time"
 )
@@ -21,27 +19,21 @@ type RequestInfo struct {
 }
 
 var jobs = make(chan RequestInfo)
-var extactlist = make(chan string)
 
-func AddQueue(accessToken string) {
-	readFile, err := os.Open("DownloadList.txt")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-	// var fileLines []RequestInfo
-	for fileScanner.Scan() {
-		downloadslice := strings.Split(fileScanner.Text(), " ")
-		prefix := downloadslice[0]
-		requestID := downloadslice[1]
-		StuID := downloadslice[2]
+// var extactlist = make(chan string)
+
+func AddQueue(accessToken, prefix string, downloadList [][]string) {
+
+	for _, element := range downloadList {
+
+		prefix := prefix + element[1] + "-"
+		requestID := element[0]
+		StuID := element[2]
 		newitem := &RequestInfo{Student_ID: StuID, Request_ID: requestID, File_prefix: prefix, AccessToken: accessToken}
-		// fileLines = append(fileLines, *newitem)
+
 		jobs <- *newitem
 	}
 
-	readFile.Close()
 	close(jobs)
 }
 
@@ -58,8 +50,9 @@ func CreateWorkerPool(noOfWorkers int) {
 
 func Processor(wg *sync.WaitGroup) {
 	for job := range jobs {
+		foldername := "StudentContract"
 		filename := job.File_prefix + job.Student_ID + ".zip"
-		out, err := os.Create(filename)
+		out, err := os.Create(foldername + "/" + filename)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -78,31 +71,32 @@ func Processor(wg *sync.WaitGroup) {
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
 			fmt.Println(err)
-		} else {
-			extactlist <- filename
 		}
-
 	}
 	wg.Done()
 
 }
 
 func main() {
-
+	// prefix := "2023-Spring-"
 	startTime := time.Now()
 	noOfWorker := 100
-	// get Access Token
-	accessToken := GetList.RetriveToken()
-	DownloadList := GetList.GetDownloadList(1, 10, "23S")
-	fmt.Print(DownloadList)
+	// // get Access Token
+	// accessToken := GetList.RetriveToken()
+	// DownloadList := GetList.GetDownloadList(10, "23S")
 
-	// read download list into channel
-	go AddQueue(accessToken)
-	// FileProcess.MergePDFs()
+	// // read download list into channel
+	// go AddQueue(accessToken, prefix, DownloadList)
+
 	// // multithread worker pool and assign job from channel
-	CreateWorkerPool(noOfWorker)
+	// CreateWorkerPool(noOfWorker)
+	go FileProcess.LoopFile()
+	FileProcess.CreateWorkerPool(noOfWorker)
+
 	endTime := time.Now()
 	diff := endTime.Sub(startTime)
-	fmt.Println("total time taken ", diff.Seconds(), "seconds")
+	fmt.Println("The download total time taken ", diff.Seconds(), "seconds")
+
+	// Test.Test()
 
 }

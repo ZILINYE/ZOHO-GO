@@ -3,7 +3,6 @@ package GetList
 import (
 	"ZOHO-GO/Maria"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math"
@@ -25,7 +24,8 @@ type DownloadList struct {
 	student_id   string
 }
 
-// var DownloadList [][]string
+var Download_list [][]string
+
 func RetriveToken() string {
 
 	params := url.Values{}
@@ -112,23 +112,26 @@ func GetThreadnumber() float64 {
 	return thread_number
 }
 
-func GetDownloadList(start_index, row_count int, keyword string) []DownloadList {
-	var Download_list []DownloadList
+func GetDownloadList(row_count int, keyword string) [][]string {
+	// thread := GetThreadnumber()
 	db := Maria.InitMaria()
-	requests := HttpRequest(keyword, row_count, start_index)["requests"]
-	for _, element := range requests.([]interface{}) {
-		if element.(map[string]interface{})["request_status"].(string) == "completed" {
-			request_id := element.(map[string]interface{})["request_id"].(string)
-			camp_email, _ := element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"].(string)
+	for i := 1; i <= 1; i++ {
+		requests := HttpRequest(keyword, row_count, i)["requests"]
+		for _, element := range requests.([]interface{}) {
+			if element.(map[string]interface{})["request_status"].(string) == "completed" {
+				request_id := element.(map[string]interface{})["request_id"].(string)
+				camp_email, _ := element.(map[string]interface{})["actions"].([]interface{})[0].(map[string]interface{})["recipient_email"].(string)
 
-			studentID, Proname := Maria.GetStudentInfo(camp_email, "Spring", 2023, db)
-			fmt.Print(request_id, " ", Proname, " ", studentID)
-			fmt.Print("\n")
-			Download_list = append(Download_list, DownloadList{request_id: request_id, program_code: Proname, student_id: studentID})
+				studentID, Proname := Maria.GetStudentInfo(camp_email, "Spring", 2023, db)
+				// fmt.Print(request_id, " ", Proname, " ", studentID)
+				// fmt.Print("\n")
+				Download_list = append(Download_list, []string{request_id, Proname, studentID})
+
+			}
 
 		}
-
 	}
+
 	return Download_list
 
 }
