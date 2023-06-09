@@ -14,6 +14,7 @@ import (
 )
 
 var extactlist = make(chan string)
+var missingList []string
 
 func LoopFile() {
 	os.Chdir("StudentContract")
@@ -40,34 +41,34 @@ func CreateWorkerPool(noOfWorkers int) {
 	wg.Wait()
 
 }
-func MergePDFs(outputfile string, inFiles []string) {
-	// inFiles := []string{"C:/Users/admin/Desktop/test/CA_QUOTE_3000150934236.3 (1).pdf", "C:/Users/admin/Desktop/test/CA_QUOTE_3000151156765.1 (3).pdf"}
-	err := api.MergeCreateFile(inFiles, outputfile, nil)
-	fmt.Print(err)
+
+func MergePDFs() {
+	inFiles := []string{"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/1.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/2.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/3.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/4.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/5.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/6.pdf",
+		"C:/Users/admin/Desktop/ZOHO-GO/StudentContract/test/7.pdf"}
+	err := api.MergeCreateFile(inFiles, "Test.pdf", nil)
+	fmt.Print("Error happend is ", err)
 
 }
 
 func Extractor(wg *sync.WaitGroup) {
-	// os.Chdir("C:/Users/admin/Desktop/ZOHO-GO/")
-	// Specify the path to the ZIP file you want to extract
-	// zipFile := "C:/Users/admin/Desktop/test1.zip"
+
 	for zipFile := range extactlist {
-		// Open the ZIP file for reading
-		// fmt.Print("the zip file path is ", zipFile)
+
 		r, err := zip.OpenReader(zipFile)
 		if err != nil {
 			fmt.Println("Error opening ZIP file:", err)
-			currentDirectory, _ := os.Getwd()
-			fmt.Println("The current directory is ", currentDirectory)
 			return
 		}
 
 		// Create a directory to extract the files
-		extractDir := strings.Split(zipFile, ".")[0]
-		if err := os.MkdirAll("C:/Users/admin/Desktop/ZOHO-GO/StudentContract/"+extractDir, 0755); err != nil {
+		extractDir := "C:/Users/admin/Desktop/ZOHO-GO/StudentContract/" + strings.Split(zipFile, ".")[0]
+		if err := os.MkdirAll(extractDir, 0755); err != nil {
 			fmt.Println("Error creating extract directory:", err)
-			currentDirectory, _ := os.Getwd()
-			fmt.Println("The current directory is ", currentDirectory)
 			return
 		}
 		var fileList []string
@@ -81,7 +82,8 @@ func Extractor(wg *sync.WaitGroup) {
 			}
 
 			// Create the corresponding file on disk
-			path := file.Name
+			path := extractDir + "/" + file.Name
+			// fmt.Print("The extracted file path is", path)
 			f, err := os.Create(path)
 			if err != nil {
 				fmt.Println("Error creating file:", err)
@@ -97,15 +99,21 @@ func Extractor(wg *sync.WaitGroup) {
 			}
 			rc.Close()
 			f.Close()
-			fmt.Println("Extracted:", file.Name)
+			// fmt.Println("Extracted:", file.Name)
 
 		}
 		r.Close()
 		filename := strings.Split(zipFile, ".")[0] + ".pdf"
-		MergePDFs(filename, fileList)
+		// MergePDFs(filename, fileList)
+		tt := api.MergeCreateFile(fileList, filename, nil)
+		if tt != nil {
+			fmt.Print(tt)
+			// missingList = append(missingList, extractDir)
+		} else {
+			fmt.Println("Extraction completed.")
+		}
 
-		fmt.Println("Extraction completed.")
 	}
 	wg.Done()
-
+	fmt.Print(missingList)
 }

@@ -3,6 +3,7 @@ package GetList
 import (
 	"ZOHO-GO/Maria"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"math"
@@ -18,11 +19,11 @@ type AccessToken struct {
 	Expires_in   int    `json:"expires_in"`
 }
 
-type DownloadList struct {
-	request_id   string
-	program_code string
-	student_id   string
-}
+// type DownloadList struct {
+// 	request_id   string
+// 	program_code string
+// 	student_id   string
+// }
 
 var Download_list [][]string
 
@@ -57,8 +58,8 @@ func RetriveToken() string {
 	return post.Access_token
 }
 
-func HttpRequest(search_key string, row_count, start_index int) map[string]any {
-	accesstoken := RetriveToken()
+func HttpRequest(search_key, accesstoken string, row_count, start_index int) map[string]any {
+
 	// Set the URL endpoint
 	apiurl := "https://sign.zoho.com/api/v1/requests"
 
@@ -69,6 +70,7 @@ func HttpRequest(search_key string, row_count, start_index int) map[string]any {
 
 	// Create a new GET request with the authorization header
 	req, err := http.NewRequest("GET", apiurl, nil)
+	// print(req)
 	if err != nil {
 		panic(err)
 	}
@@ -101,22 +103,26 @@ func HttpRequest(search_key string, row_count, start_index int) map[string]any {
 
 }
 
-func GetThreadnumber() float64 {
-	page_context := HttpRequest("23W", 10, 1)["page_context"]
+func GetThreadnumber() (int, string) {
+	accesstoken := RetriveToken()
+	page_context := HttpRequest("23S", accesstoken, 100, 1)["page_context"]
 
 	var total_count float64 = page_context.(map[string]interface{})["total_count"].(float64)
-	pages := total_count / 10
+	fmt.Println(total_count)
+	pages := total_count / 100
 
-	thread_number := math.Ceil(pages)
-	// fmt.Println(thread_number)
-	return thread_number
+	thread_number := int(math.Ceil(pages))
+	fmt.Println(thread_number)
+	return thread_number, accesstoken
 }
 
 func GetDownloadList(row_count int, keyword string) [][]string {
-	// thread := GetThreadnumber()
+	thread, token := GetThreadnumber()
 	db := Maria.InitMaria()
-	for i := 1; i <= 1; i++ {
-		requests := HttpRequest(keyword, row_count, i)["requests"]
+	start_index := 1
+	for i := 1; i <= thread; i++ {
+		requests := HttpRequest(keyword, token, row_count, start_index)["requests"]
+
 		for _, element := range requests.([]interface{}) {
 			if element.(map[string]interface{})["request_status"].(string) == "completed" {
 				request_id := element.(map[string]interface{})["request_id"].(string)
@@ -130,6 +136,7 @@ func GetDownloadList(row_count int, keyword string) [][]string {
 			}
 
 		}
+		start_index += 100
 	}
 
 	return Download_list
