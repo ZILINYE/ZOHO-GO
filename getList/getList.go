@@ -30,9 +30,9 @@ var Download_list [][]string
 func RetriveToken() string {
 
 	params := url.Values{}
-	params.Add("refresh_token", "1000.23be290456580cd7378b94f2eb3d2334.8ed115d741371a6cf5ada13b2903819e")
-	params.Add("client_id", "1000.6C4D4C3LQS1XV9BVF70PS55G3PELTK")
-	params.Add("client_secret", "211e6b7d3395fd9e8f7d67df464a884e0f573c6079")
+	params.Add("refresh_token", "your client token") // enter your refresh token
+	params.Add("client_id", "1your client id") // enter your client ID
+	params.Add("client_secret", "your client secret") // enter your Client Secret
 	params.Add("redirect_uri", "https%3A%2F%2Fsign.zoho.com")
 	params.Add("grant_type", "refresh_token")
 	resp, err := http.PostForm("https://accounts.zoho.com/oauth/v2/token?",
