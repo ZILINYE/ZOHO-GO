@@ -30,7 +30,7 @@ func GetStudentInfo(campemail,term string,year int,db *sql.DB) (string,string) {
 
 func InitMaria() *sql.DB {
 	// Open a new database connection
-	db, err := sql.Open("mysql", "it:Acumen321@tcp(192.168.5.238:3306)/Ace?charset=utf8")
+	db, err := sql.Open("mysql", "db_username:db_password@tcp(db_ipaddress:3306)/Ace?charset=utf8")
 	if err != nil {
 		panic(err)
 	}
