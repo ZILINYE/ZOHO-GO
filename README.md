@@ -19,6 +19,8 @@ Before you begin, ensure you have the following:
 - A Zoho Sign API key, obtainable through your Zoho Sign account for authenticating API requests.
 - Basic knowledge of Go programming and understanding of concurrent programming concepts.
 
+## Usage
+To extract the zip file and merge the PDF, please use extractor.py. This utility is designed to complement the downloading process by providing an easy way to consolidate downloaded documents into a single PDF file for easier handling and storage.
 ## Support and Contributions
 For support requests, feature suggestions, or contributions, please open an issue in the GitHub repository or submit a pull request. Your feedback and contributions are welcome to improve the script's functionality and reliability.
 
