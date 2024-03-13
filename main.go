@@ -80,19 +80,19 @@ func Processor(wg *sync.WaitGroup) {
 func main() {
 
 	startTime := time.Now()
-	// prefix := "2023-Spring-"
+	prefix := "2023-Spring-"
 	noOfWorker := 100
 	// get Access Token
-	// accessToken := GetList.RetriveToken()
-	// DownloadList := GetList.GetDownloadList(100, "23S")
+	accessToken := GetList.RetriveToken()
+	DownloadList := GetList.GetDownloadList(100, "23S")
 
 	// read download list into channel
-	// go AddQueue(accessToken, prefix, DownloadList)
+	go AddQueue(accessToken, prefix, DownloadList)
 
 	// multithread worker pool and assign job from channel
-	// CreateWorkerPool(noOfWorker)
-	go FileProcess.LoopFile()
-	FileProcess.CreateWorkerPool(noOfWorker)
+	CreateWorkerPool(noOfWorker)
+	// go FileProcess.LoopFile()
+	// FileProcess.CreateWorkerPool(noOfWorker)
 	// FileProcess.MergePDFs()
 	endTime := time.Now()
 	diff := endTime.Sub(startTime)
